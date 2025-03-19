@@ -1,5 +1,5 @@
 # Build stage
-FROM node:20-alpine AS build
+FROM node:20-alpine3.19 AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -7,7 +7,10 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM nginx:alpine
+FROM nginx:1.25.4-alpine3.19
+# Update packages to get latest security fixes
+RUN apk update && apk upgrade
+
 COPY --from=build /app/dist /usr/share/nginx/html
 # Add nginx configuration if needed
 # COPY nginx.conf /etc/nginx/conf.d/default.conf
